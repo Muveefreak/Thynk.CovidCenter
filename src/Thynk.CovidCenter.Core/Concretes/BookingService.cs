@@ -103,7 +103,8 @@ namespace Thynk.CovidCenter.Core.Concretes
                 LocationID = request.LocationID,
                 ApplicationUserId = request.ApplicationUserId,
                 IndividualName = request.IndividualName,
-                BookingStatus = BookingStatus.Pending
+                BookingStatus = BookingStatus.Pending,
+                BookingResult = BookingResultType.None
             };
 
             await _cache.RemoveKeyAsync($"{AllAvailDateCacheConstant}");

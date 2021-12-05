@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{58DCA0A8-5EA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B745BF0F-6E68-4805-8589-91D1E6CD534B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thynk.CovidCenter.UnitTesting", "..\tests\Thynk.CovidCenter.UnitTesting\Thynk.CovidCenter.UnitTesting.csproj", "{B46BE29C-A58C-43FF-BFBD-DB71CC013292}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{0D554C49-AA43-428D-84F2-4B63AD68DE40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D554C49-AA43-428D-84F2-4B63AD68DE40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D554C49-AA43-428D-84F2-4B63AD68DE40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B46BE29C-A58C-43FF-BFBD-DB71CC013292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B46BE29C-A58C-43FF-BFBD-DB71CC013292}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46BE29C-A58C-43FF-BFBD-DB71CC013292}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B46BE29C-A58C-43FF-BFBD-DB71CC013292}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{2931B71F-FC89-4D2E-AA1E-921D4EDA3463} = {58DCA0A8-5EA3-43C4-8910-7B0467035E9A}
 		{7C6B0D9A-59E2-4D66-A4D8-99F20B0A287B} = {58DCA0A8-5EA3-43C4-8910-7B0467035E9A}
 		{0D554C49-AA43-428D-84F2-4B63AD68DE40} = {58DCA0A8-5EA3-43C4-8910-7B0467035E9A}
+		{B46BE29C-A58C-43FF-BFBD-DB71CC013292} = {B745BF0F-6E68-4805-8589-91D1E6CD534B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A00F4606-C9FA-4B14-82A4-EF3FDD360EC4}

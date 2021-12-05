@@ -2,6 +2,7 @@
 {
     public enum BookingResultType
     {
+        None = 0,
         Negative,
         Positive
     }

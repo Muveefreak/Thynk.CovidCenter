@@ -14,7 +14,8 @@ namespace Thynk.CovidCenter.Repository.Queries.Interfaces
         Task<IEnumerable<TEntity>> GetAllAsync();
         IQueryable<TEntity> GetBy(Expression<Func<TEntity, bool>> predicate);
         Task<IQueryable<TEntity>> GetByAsync(Expression<Func<TEntity, bool>> predicate);
-        TEntity GetByIncludesAsync<T1>(Expression<Func<TEntity, bool>> predicate, Func<TEntity, T1, TEntity> map, params Expression<Func<TEntity, object>>[] includes);
+        TEntity GetByIncludesAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
+        IQueryable<TEntity> GetByAllIncluding(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties);
         TEntity GetByDefault(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity> GetByDefaultAsync(Expression<Func<TEntity, bool>> predicate);
         bool IsExist(Expression<Func<TEntity, bool>> predicate);

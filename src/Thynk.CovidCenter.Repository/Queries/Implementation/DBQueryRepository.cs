@@ -60,7 +60,7 @@ namespace Thynk.CovidCenter.Repository.Queries.Implementation
             return await _dbSet.FirstOrDefaultAsync(predicate);
         }
 
-        public TEntity GetByIncludesAsync<T1>(Expression<Func<TEntity, bool>> predicate, Func<TEntity, T1, TEntity> map, params Expression<Func<TEntity, object>>[] includes)
+        public TEntity GetByIncludesAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             var Query = GetAllIncluding(includes);
 
@@ -70,6 +70,14 @@ namespace Thynk.CovidCenter.Repository.Queries.Implementation
         public IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] includeProperties)
         {
             IQueryable<TEntity> Queryable = _dbSet.AsNoTracking();
+
+            return includeProperties.Aggregate
+              (Queryable, (current, includeProperty) => current.Include(includeProperty));
+        }
+
+        public IQueryable<TEntity> GetByAllIncluding(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            IQueryable<TEntity> Queryable = _dbSet.AsNoTracking().Where(predicate);
 
             return includeProperties.Aggregate
               (Queryable, (current, includeProperty) => current.Include(includeProperty));

@@ -1,4 +1,6 @@
-﻿namespace Thynk.CovidCenter.Core.DTOs
+﻿using System;
+
+namespace Thynk.CovidCenter.Core.DTOs
 {
     public class ReportDTO
     {
@@ -7,5 +9,6 @@
         public long Tests { get; set; }
         public long PositiveCases { get; set; }
         public long NegativeCases { get; set; }
+        public DateTime AvailableDate { get; set; }
     }
 }

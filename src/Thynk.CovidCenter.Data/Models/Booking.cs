@@ -12,9 +12,11 @@ namespace Thynk.CovidCenter.Data.Models
         public BookingStatus BookingStatus { get; set; }
         public BookingResultType BookingResult { get; set; }
         public Guid ApplicationUserId { get; set; }
+        public Guid AvailableDatesId { get; set; }
         public string IndividualName { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual Location Locations { get; set; }
+        public virtual AvailableDate AvailableDates { get; set; }
     }
 
 }

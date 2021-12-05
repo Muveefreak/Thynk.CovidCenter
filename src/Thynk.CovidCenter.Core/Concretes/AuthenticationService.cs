@@ -11,7 +11,7 @@ using Thynk.CovidCenter.Repository.Queries.Interfaces;
 
 namespace Thynk.CovidCenter.Core.Concretes
 {
-    public class AuthenticationService
+    public class AuthenticationService : IAuthenticationService
     {
         private readonly IDBQueryRepository<ApplicationUser> _userQueryRepository;
         private readonly IMapper _mapper;

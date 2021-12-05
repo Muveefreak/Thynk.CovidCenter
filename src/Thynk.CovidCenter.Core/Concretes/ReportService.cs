@@ -69,9 +69,10 @@ namespace Thynk.CovidCenter.Core.Concretes
 
         public async Task<ReportResponseModel> GetResults(Guid locationId)
         {
-            List<ReportDTO> reportDTO = new();
+            List<ReportDTO> reportListDTO = new();
+            ReportDTO reportDTO = new();
 
-            List<AvailableDate> results = (await _availableDateQueryRepository.GetByAsync(x => x.LocationId == locationId)).ToList();
+            List<AvailableDate> results = _availableDateQueryRepository.GetByAllIncluding(x => x.LocationId == locationId, j => j.Bookings).ToList();
 
             if (!results.Any())
             {
@@ -81,11 +82,25 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
+            for(var i = 0; i<= results.Count; i++)
+            {
+                reportDTO.AvailableDate = results[i].DateAvailable;
+                reportDTO.BookingCapacity = results[i].AvailableSlots + results[i].Bookings.Count;
+                reportDTO.Bookings = results[i].Bookings.Count;
+                reportDTO.Tests = results[i].Bookings.Count(x => x.BookingStatus == BookingStatus.Completed 
+                && x.BookingResult == BookingResultType.Negative || x.BookingResult == BookingResultType.Positive);
+                reportDTO.PositiveCases = results[i].Bookings.Count(x => x.BookingStatus == BookingStatus.Completed
+                && x.BookingResult == BookingResultType.Positive);
+                reportDTO.NegativeCases = results[i].Bookings.Count(x => x.BookingStatus == BookingStatus.Completed
+                && x.BookingResult == BookingResultType.Negative);
+                reportListDTO.Add(reportDTO);
+            }
+
             return new ReportResponseModel
             {
                 Status = true,
                 Message = ResponseMessages.Success,
-                Data = reportDTO
+                Data = reportListDTO.OrderBy(x => x.AvailableDate).ToList()
             };
         }
     }
