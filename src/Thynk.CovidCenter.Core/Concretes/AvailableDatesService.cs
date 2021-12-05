@@ -8,9 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Thynk.CovidCenter.Core.Constants;
 using Thynk.CovidCenter.Core.DTOs;
+using Thynk.CovidCenter.Core.Helpers;
 using Thynk.CovidCenter.Core.Interface;
 using Thynk.CovidCenter.Core.RequestModel;
 using Thynk.CovidCenter.Core.ResponseModel;
+using Thynk.CovidCenter.Data.Enums;
 using Thynk.CovidCenter.Data.Models;
 using Thynk.CovidCenter.Repository.Cache;
 using Thynk.CovidCenter.Repository.Commands.Interfaces;
@@ -23,31 +25,65 @@ namespace Thynk.CovidCenter.Core.Concretes
         private readonly IMapper _mapper;
         private readonly IDBCommandRepository<AvailableDate> _availableDatesCommandRepository;
         private readonly IDBQueryRepository<AvailableDate> _availableDatesQueryRepository;
+        private readonly IDBQueryRepository<ApplicationUser> _applicationUserQueryRepository;
         private readonly IConfiguration _configuration;
         private readonly ICache _cache;
-        private const string AllAvailDateCacheConstant = "COVID_CENTER_ALL_AVAIL_DATES";
-        private const string AvailDateCacheConstant = "COVID_CENTER_AVAIL_DATES";
+        private readonly IUtilities _utilities;
 
         public AvailableDatesService(IMapper mapper,
             IDBCommandRepository<AvailableDate> availableDatesCommandRepository,
             IDBQueryRepository<AvailableDate> availableDatesQueryRepository,
+            IDBQueryRepository<ApplicationUser> applicationUserQueryRepository,
             ICache cache,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUtilities utilities)
         {
             _configuration = configuration;
             _availableDatesCommandRepository = availableDatesCommandRepository;
             _availableDatesQueryRepository = availableDatesQueryRepository;
+            _applicationUserQueryRepository = applicationUserQueryRepository;
             _cache = cache;
             _mapper = mapper;
+            _utilities = utilities;
         }
-        public async Task<BaseResponse> CreateDates(List<CreateAvailableDatesRequest> request)
+        public async Task<BaseResponse> CreateDates(CreateAvailableDatesRequest request)
         {
-            var availableDatesList = _mapper.Map<List<AvailableDate>>(request);
-            availableDatesList.ForEach(x => x.Available = true);
+            ApplicationUser user = await _utilities.GetUser(request.ApplicationUserId);
+            if (user.UserRole != UserRole.Administrator)
+            {
+                return new BaseResponse
+                {
+                    Message = ResponseMessages.OnlyAdministrator,
+                    Status = false
+                };
+            }
+            Location location = await _utilities.GetLocation(request.LocationId);
+            if (location == null)
+            {
+                return new BaseResponse
+                {
+                    Message = ResponseMessages.NoLocationRecordFound,
+                    Status = false
+                };
+            }
 
-            await _cache.RemoveKeyAsync($"{AvailDateCacheConstant}");
+            var alreadyExists = await _availableDatesQueryRepository.IsExistAsync(x => x.LocationId == request.LocationId && x.DateAvailable == request.DateAvailable);
+            if(alreadyExists)
+            {
+                return new BaseResponse
+                {
+                    Message = ResponseMessages.NoDuplicateDatesPerLocation,
+                    Status = false
+                };
+            }
 
-            await _availableDatesCommandRepository.AddRangeAsync(availableDatesList);
+            var availableDate = _mapper.Map<AvailableDate>(request);
+            availableDate.Available = true;
+            availableDate.DateAvailable = availableDate.DateAvailable.Date;
+
+            await _cache.RemoveKeyAsync($"{CacheConstants.AllAvailDateCacheConstant}");
+
+            await _availableDatesCommandRepository.AddAsync(availableDate);
             await _availableDatesCommandRepository.SaveAsync();
             await CacheAllAvailDates();
 
@@ -63,7 +99,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             List<AvailableDate> allAvailableDates = (await _availableDatesQueryRepository.GetAllAsync()).ToList();
             try
             {
-                await _cache.SetValueAsync($"{AllAvailDateCacheConstant}", JsonConvert.SerializeObject(allAvailableDates), 3600);
+                await _cache.SetValueAsync($"{CacheConstants.AllAvailDateCacheConstant}", JsonConvert.SerializeObject(allAvailableDates), 3600);
             }
             catch (Exception ex)
             {
@@ -71,17 +107,27 @@ namespace Thynk.CovidCenter.Core.Concretes
             }
         }
 
-        public async Task<AvailableDatesResponseModel> GetDates(Guid locationId)
+        public async Task<AvailableDatesResponseModel> GetDatesByLocation(Guid locationId)
         {
             List<AvailableDate> availableDates = new();
             List<AvailableDatesDTO> availableDatesDTO = new();
 
-            string allAvailableDatesFromCache = await _cache.GetValueAsync($"{AllAvailDateCacheConstant}");
+            Location location = await _utilities.GetLocation(locationId);
+            if (location == null)
+            {
+                return new AvailableDatesResponseModel
+                {
+                    Message = ResponseMessages.NoLocationRecordFound,
+                    Status = false
+                };
+            }
+
+            string allAvailableDatesFromCache = await _cache.GetValueAsync($"{CacheConstants.AllAvailDateCacheConstant}");
 
             if (!string.IsNullOrEmpty(allAvailableDatesFromCache))
             {
-                availableDatesDTO = _mapper.Map<List<AvailableDatesDTO>>(allAvailableDatesFromCache);
-                var availableDatesFilteredDTO = availableDatesDTO.Where(x => x.LocationId == locationId && x.DateAvailable >= DateTime.UtcNow).ToList();
+                availableDatesDTO = _mapper.Map<List<AvailableDatesDTO>>(JsonConvert.DeserializeObject<List<AvailableDate>>(allAvailableDatesFromCache));
+                var availableDatesFilteredDTO = availableDatesDTO.Where(x => x.LocationId == locationId && x.DateAvailable >= DateTime.UtcNow.Date && x.AvailableSlots > 0).ToList();
 
                 return new AvailableDatesResponseModel
                 {
@@ -91,11 +137,12 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
-            availableDates = (await _availableDatesQueryRepository.GetByAsync(x => x.ID == locationId && x.DateAvailable >= DateTime.UtcNow)).ToList();
+            availableDates = (await _availableDatesQueryRepository.GetByAsync(x => x.ID == locationId && x.DateAvailable >= DateTime.UtcNow.Date && x.AvailableSlots > 0)).ToList();
 
             if (availableDates.Any())
             {
                 availableDatesDTO = _mapper.Map<List<AvailableDatesDTO>>(availableDates);
+                await CacheAllAvailDates();
 
                 return new AvailableDatesResponseModel
                 {
@@ -104,6 +151,7 @@ namespace Thynk.CovidCenter.Core.Concretes
                     Data = availableDatesDTO
                 };
             }
+
             return new AvailableDatesResponseModel
             {
                 Message = ResponseMessages.NoAvailableDatesRecordFound
@@ -115,12 +163,12 @@ namespace Thynk.CovidCenter.Core.Concretes
             List<AvailableDate> availableDates = new();
             List<AvailableDatesDTO> availableDatesDTO = new();
 
-            string allAvailableDatesFromCache = await _cache.GetValueAsync($"{AllAvailDateCacheConstant}");
+            string allAvailableDatesFromCache = await _cache.GetValueAsync($"{CacheConstants.AllAvailDateCacheConstant}");
 
             if (!string.IsNullOrEmpty(allAvailableDatesFromCache))
             {
-                availableDatesDTO = _mapper.Map<List<AvailableDatesDTO>>(allAvailableDatesFromCache);
-                var availableDatesFilteredDTO = availableDatesDTO.Where(x => x.DateAvailable >= DateTime.UtcNow).ToList();
+                availableDatesDTO = _mapper.Map<List<AvailableDatesDTO>>(JsonConvert.DeserializeObject<List<AvailableDate>>(allAvailableDatesFromCache));
+                var availableDatesFilteredDTO = availableDatesDTO.Where(x => x.DateAvailable >= DateTime.UtcNow.Date).ToList();
 
                 return new AvailableDatesResponseModel
                 {
@@ -130,11 +178,12 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
-            availableDates = (await _availableDatesQueryRepository.GetByAsync(x => x.DateAvailable >= DateTime.UtcNow)).ToList();
+            availableDates = (await _availableDatesQueryRepository.GetByAsync(x => x.DateAvailable >= DateTime.UtcNow.Date)).ToList();
 
             if (availableDates.Any())
             {
                 availableDatesDTO = _mapper.Map<List<AvailableDatesDTO>>(availableDates);
+                await CacheAllAvailDates();
 
                 return new AvailableDatesResponseModel
                 {

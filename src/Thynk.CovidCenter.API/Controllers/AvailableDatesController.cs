@@ -26,20 +26,20 @@ namespace Thynk.CovidCenter.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
-        public async Task<IActionResult> CreateAvailableDates(List<CreateAvailableDatesRequest> request)
+        public async Task<IActionResult> CreateAvailableDates(CreateAvailableDatesRequest request)
         {
             CoreBaseResponse response = await _availableDatesService.CreateDates(request);
             return Ok(response);
         }
 
         [HttpPost]
-        [Route("get-available-dates")]
+        [Route("get-available-dates-by-location")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(AvailableDatesResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
-        public async Task<IActionResult> GetAvailableDates(Guid locationId)
+        public async Task<IActionResult> GetAvailableDatesByLocation(Guid locationId)
         {
-            AvailableDatesResponseModel response = await _availableDatesService.GetDates(locationId);
+            AvailableDatesResponseModel response = await _availableDatesService.GetDatesByLocation(locationId);
             return Ok(response);
         }
 

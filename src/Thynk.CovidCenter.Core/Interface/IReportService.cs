@@ -8,6 +8,6 @@ namespace Thynk.CovidCenter.Core.Interface
     public interface IReportService
     {
         Task<BaseResponse> BookingResult(BookingResultRequest request);
-        Task<ReportResponseModel> GetResults(Guid locationId);
+        Task<ReportResponseModel> GetResults(GetResultsRequest request);
     }
 }

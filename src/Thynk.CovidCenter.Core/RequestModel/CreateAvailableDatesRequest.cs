@@ -7,8 +7,9 @@ namespace Thynk.CovidCenter.Core.RequestModel
     public class CreateAvailableDatesRequest
     {
         [Required]
+        public Guid ApplicationUserId { get; set; }
         public Guid LocationId { get; set; }
-        [Required]
-        public List<DateTime> DatesAvailable { get; set; }
+        public DateTime DateAvailable { get; set; }
+        public long AvailableSlots { get; set; }
     }
 }

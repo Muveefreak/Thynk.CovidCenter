@@ -20,6 +20,10 @@ namespace Thynk.CovidCenter.Repository
 
             modelBuilder.Entity<AvailableDate>()
                .HasIndex(r => new { r.DateAvailable });
+
+            modelBuilder.Entity<ApplicationUser>()
+               .HasIndex(t => new { t.Email })
+               .IsUnique();
         }
     }
 }

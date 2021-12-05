@@ -6,7 +6,6 @@ using Thynk.CovidCenter.Core.Interface;
 using Thynk.CovidCenter.Core.RequestModel;
 using Thynk.CovidCenter.Core.ResponseModel;
 using Thynk.CovidCenter.Data.Models;
-using Thynk.CovidCenter.Repository.Commands.Interfaces;
 using Thynk.CovidCenter.Repository.Queries.Interfaces;
 
 namespace Thynk.CovidCenter.Core.Concretes
@@ -25,13 +24,13 @@ namespace Thynk.CovidCenter.Core.Concretes
             _mapper = mapper;
         }
 
-        public async Task<GenericResponse<UserDTO>> Authenticate(AuthenticationRequest auth)
+        public async Task<GenericResponse<UserDTO>> Authenticate(AuthenticationRequest user)
         {
-            var client = await _userQueryRepository.GetByDefaultAsync(x => x.Email == auth.Email);
+            var client = await _userQueryRepository.GetByDefaultAsync(x => x.Email == user.Email);
 
             if (client == null) return new GenericResponse<UserDTO> { Status = false, Message = ResponseMessages.NoUserRecordFound };
 
-            if (!_passwordService.PasswordCheck(auth.Password, client.PasswordSalt, client.PasswordHash)) return new GenericResponse<UserDTO> { Status = false, Message = ResponseMessages.InvalidCredentials };
+            if (!_passwordService.PasswordCheck(user.Password, client.PasswordSalt, client.PasswordHash)) return new GenericResponse<UserDTO> { Status = false, Message = ResponseMessages.InvalidCredentials };
 
             var userDTO = _mapper.Map<UserDTO>(client);
 

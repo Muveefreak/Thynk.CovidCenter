@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Thynk.CovidCenter.Repository.Commands.Interfaces;
@@ -7,8 +8,8 @@ namespace Thynk.CovidCenter.Repository.Commands.Implementation
 {
     public class DBCommandRepository<TEntity> : IDBCommandRepository<TEntity> where TEntity : class
     {
-        private CovidCenterDbContext _context;
-        private DbSet<TEntity> _dbSet;
+        private readonly CovidCenterDbContext _context;
+        private readonly DbSet<TEntity> _dbSet;
 
         public DBCommandRepository(CovidCenterDbContext context)
         {
@@ -41,7 +42,7 @@ namespace Thynk.CovidCenter.Repository.Commands.Implementation
         {
             if (entity == null)
             {
-                //throw new ArgumentNullException("entity");
+                throw new ArgumentNullException("entity");
             }
             _dbSet.Remove(entity);
         }

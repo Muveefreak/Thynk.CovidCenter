@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Thynk.CovidCenter.Data.Enums;
 
 namespace Thynk.CovidCenter.Core.RequestModel
 {
@@ -10,8 +11,10 @@ namespace Thynk.CovidCenter.Core.RequestModel
         [Required]
         public Guid ApplicationUserId { get; set; }
         [Required]
-        public string IndividualName { get; set; }
+        public Guid AvailableDateId { get; set; }
         [Required]
         public DateTime AvailableDateSelected { get; set; }
+        [EnumDataType(typeof(TestType))]
+        public TestType TetstType { get; set; }
     }
 }

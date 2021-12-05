@@ -10,5 +10,7 @@ namespace Thynk.CovidCenter.Core.RequestModel
         public Guid ID { get; set; }
         [EnumDataType(typeof(BookingResultType))]
         public BookingResultType BookingResult { get; set; }
+        [Required]
+        public Guid ApplicationUserId { get; set; }
     }
 }

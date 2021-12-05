@@ -26,8 +26,6 @@ namespace Thynk.CovidCenter.Core.Concretes
         private readonly IDBQueryRepository<ApplicationUser> _userQueryRepository;
         private readonly IConfiguration _configuration;
         private readonly ICache _cache;
-        private const string UserCacheConstant = "COVID_CENTER_USER";
-        private const string UsersCacheConstant = "COVID_CENTER_USERS";
 
         public UserService(IMapper mapper,
             IDBCommandRepository<ApplicationUser> userCommandRepository,
@@ -55,7 +53,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             userEntity.PasswordHash = passwordHash;
             userEntity.PasswordSalt = passwordSalt;
 
-            await _cache.RemoveKeyAsync($"{UsersCacheConstant}");
+            await _cache.RemoveKeyAsync($"{CacheConstants.UsersCacheConstant}");
 
             await _userCommandRepository.AddAsync(userEntity);
             await _userCommandRepository.SaveAsync();
@@ -73,7 +71,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             ApplicationUser user = new();
             UserDTO userDTO = new();
 
-            string userFromCache = await _cache.GetValueAsync($"{UserCacheConstant}_{Convert.ToString(userId)}");
+            string userFromCache = await _cache.GetValueAsync($"{CacheConstants.UserCacheConstant}_{Convert.ToString(userId)}");
 
             if (!string.IsNullOrEmpty(userFromCache))
             {
@@ -92,7 +90,7 @@ namespace Thynk.CovidCenter.Core.Concretes
 
             if (user != null)
             {
-                await _cache.SetValueAsync($"{UserCacheConstant}_{Convert.ToString(userId)}", JsonConvert.SerializeObject(user), 3600);
+                await _cache.SetValueAsync($"{CacheConstants.UserCacheConstant}_{Convert.ToString(userId)}", JsonConvert.SerializeObject(user), 3600);
                 userDTO = _mapper.Map<UserDTO>(user);
 
                 return new GenericResponse<UserDTO>
@@ -113,7 +111,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             List<ApplicationUser> users = new();
             List<UserDTO> usersDTO = new();
 
-            string usersFromCache = await _cache.GetValueAsync($"{UsersCacheConstant}");
+            string usersFromCache = await _cache.GetValueAsync($"{CacheConstants.UsersCacheConstant}");
 
             if (!string.IsNullOrEmpty(usersFromCache))
             {
@@ -152,7 +150,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             List<ApplicationUser> users = (await _userQueryRepository.GetAllAsync()).ToList();
             try
             {
-                await _cache.SetValueAsync($"{UsersCacheConstant}", JsonConvert.SerializeObject(users), 3600);
+                await _cache.SetValueAsync($"{CacheConstants.UsersCacheConstant}", JsonConvert.SerializeObject(users), 3600);
             }
             catch (Exception ex)
             {

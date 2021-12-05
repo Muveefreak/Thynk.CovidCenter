@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Thynk.CovidCenter.Core.Constants;
 using Thynk.CovidCenter.Core.DTOs;
+using Thynk.CovidCenter.Core.Helpers;
 using Thynk.CovidCenter.Core.Interface;
 using Thynk.CovidCenter.Core.RequestModel;
 using Thynk.CovidCenter.Core.ResponseModel;
@@ -28,10 +27,9 @@ namespace Thynk.CovidCenter.Core.Concretes
         private readonly IDBQueryRepository<AvailableDate> _availableDateQueryRepository;
         private readonly IDBQueryRepository<ApplicationUser> _applicationUserQueryRepository;
         private readonly IConfiguration _configuration;
+        private readonly IUtilities _utilities;
         private readonly ICache _cache;
-        private const string AllAvailDateCacheConstant = "COVID_CENTER_ALL_AVAIL_DATES";
-        private const string AvailDateCacheConstant = "COVID_CENTER_AVAIL_DATES";
-        private const string BookingCacheConstant = "COVID_CENTER_BOOKINGS";
+        //private const string AllAvailDateCacheConstant = "COVID_CENTER_ALL_AVAIL_DATES";
 
         public BookingService(IMapper mapper,
             IDBCommandRepository<Booking> bookingCommandRepository,
@@ -40,7 +38,8 @@ namespace Thynk.CovidCenter.Core.Concretes
             IDBQueryRepository<AvailableDate> availableDateQueryRepository,
             IDBQueryRepository<ApplicationUser> applicationUserQueryRepository,
             ICache cache,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUtilities utilities)
         {
             _configuration = configuration;
             _bookingCommandRepository = bookingCommandRepository;
@@ -50,12 +49,13 @@ namespace Thynk.CovidCenter.Core.Concretes
             _applicationUserQueryRepository = applicationUserQueryRepository;
             _cache = cache;
             _mapper = mapper;
+            _utilities = utilities;
         }
         public async Task<BookingResponseModel> GetBookings(BookingStatus status)
         {
-            List<Booking> bookings = (await _bookingQueryRepository.GetByAsync(x => x.AvailableDateSelected <= DateTime.UtcNow)).ToList();
+            List<Booking> bookings = (await _bookingQueryRepository.GetByAsync(x => x.AvailableDateSelected <= DateTime.UtcNow && x.BookingStatus == status)).ToList();
 
-            if(!bookings.Any())
+            if (!bookings.Any())
             {
                 return new BookingResponseModel
                 {
@@ -76,7 +76,29 @@ namespace Thynk.CovidCenter.Core.Concretes
 
         public async Task<BaseResponse> CreateBooking(CreateBookingRequest request)
         {
-            AvailableDate availableDate = await _availableDateQueryRepository.GetByDefaultAsync(x => x.DateAvailable == request.AvailableDateSelected);
+            ApplicationUser user = await _utilities.GetUser(request.ApplicationUserId);
+            if (user.UserRole != UserRole.Individual)
+            {
+                return new BaseResponse
+                {
+                    Message = ResponseMessages.OnlyIndividual,
+                    Status = false
+                };
+            }
+
+            Booking bookings = await _bookingQueryRepository.GetByDefaultAsync(x => x.AvailableDateSelected == request.AvailableDateSelected.Date
+            && x.ApplicationUserId == request.ApplicationUserId && x.LocationID == request.LocationID);
+            if (bookings != null)
+            {
+                return new BaseResponse
+                {
+                    Message = ResponseMessages.NoDuplicateBokingsLocation,
+                    Status = false
+                };
+            }
+
+            AvailableDate availableDate = await _availableDateQueryRepository.GetByDefaultAsync(x => x.DateAvailable == request.AvailableDateSelected.Date
+            && x.LocationId == request.LocationID && x.ID == request.AvailableDateId);
 
             if (availableDate == null)
             {
@@ -91,7 +113,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             {
                 return new BaseResponse
                 {
-                    Message = ResponseMessages.Success,
+                    Message = ResponseMessages.NoAvailableSlots,
                     Status = false
                 };
             }
@@ -99,15 +121,16 @@ namespace Thynk.CovidCenter.Core.Concretes
             Booking bookingEntity = new()
             {
                 DateCreated = DateTime.UtcNow,
-                AvailableDateSelected = request.AvailableDateSelected,
+                AvailableDateSelected = request.AvailableDateSelected.Date,
                 LocationID = request.LocationID,
                 ApplicationUserId = request.ApplicationUserId,
-                IndividualName = request.IndividualName,
+                IndividualName = user.UserName,
                 BookingStatus = BookingStatus.Pending,
-                BookingResult = BookingResultType.None
+                BookingResult = BookingResultType.None,
+                AvailableDateId = request.AvailableDateId
             };
 
-            await _cache.RemoveKeyAsync($"{AllAvailDateCacheConstant}");
+            await _cache.RemoveKeyAsync($"{CacheConstants.AllAvailDateCacheConstant}");
 
             await _bookingCommandRepository.AddAsync(bookingEntity);
 
@@ -129,13 +152,13 @@ namespace Thynk.CovidCenter.Core.Concretes
 
         public async Task<BaseResponse> CancelBooking(CreateBookingRequest request)
         {
-            AvailableDate availableDate = await _availableDateQueryRepository.GetByDefaultAsync(x => 
-            x.DateAvailable == request.AvailableDateSelected 
+            AvailableDate availableDate = await _availableDateQueryRepository.GetByDefaultAsync(x =>
+            x.DateAvailable == request.AvailableDateSelected.Date
             && x.LocationId == request.LocationID);
 
 
-            Booking booking = await _bookingQueryRepository.GetByDefaultAsync(x => 
-            x.AvailableDateSelected == request.AvailableDateSelected
+            Booking booking = await _bookingQueryRepository.GetByDefaultAsync(x =>
+            x.AvailableDateSelected == request.AvailableDateSelected.Date
             && x.LocationID == request.LocationID
             && x.ApplicationUserId == request.ApplicationUserId);
 
@@ -158,7 +181,7 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
-            await _cache.RemoveKeyAsync($"{AllAvailDateCacheConstant}");
+            await _cache.RemoveKeyAsync($"{CacheConstants.AllAvailDateCacheConstant}");
 
             //add transaction
             booking.BookingStatus = BookingStatus.Cancelled;

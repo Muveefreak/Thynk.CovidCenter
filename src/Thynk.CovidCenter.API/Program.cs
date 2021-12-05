@@ -33,7 +33,7 @@ namespace Thynk.CovidCenter.API
 
                 var context = scope.ServiceProvider.GetRequiredService<CovidCenterDbContext>();
 
-                context.Database.EnsureDeleted();
+                //context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
             catch (System.Exception ex)

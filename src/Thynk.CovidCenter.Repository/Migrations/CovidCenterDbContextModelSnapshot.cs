@@ -25,6 +25,15 @@ namespace Thynk.CovidCenter.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
@@ -32,6 +41,10 @@ namespace Thynk.CovidCenter.Repository.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("ApplicationUsers");
                 });
@@ -41,6 +54,12 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("AvailableSlots")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("DateAvailable")
                         .HasColumnType("datetime2");
@@ -66,8 +85,14 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AvailableDateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("AvailableDateSelected")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("BookingResult")
+                        .HasColumnType("int");
 
                     b.Property<int>("BookingStatus")
                         .HasColumnType("int");
@@ -78,19 +103,7 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IndividualAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IndividualCity")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IndividualEmail")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("IndividualName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IndiviualPhone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("LocationID")
@@ -99,6 +112,8 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("AvailableDateId");
 
                     b.HasIndex("LocationID");
 
@@ -110,12 +125,6 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Available")
-                        .HasColumnType("bit");
-
-                    b.Property<long>("AvailableSlots")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -136,13 +145,13 @@ namespace Thynk.CovidCenter.Repository.Migrations
 
             modelBuilder.Entity("Thynk.CovidCenter.Data.Models.AvailableDate", b =>
                 {
-                    b.HasOne("Thynk.CovidCenter.Data.Models.Location", "Locations")
+                    b.HasOne("Thynk.CovidCenter.Data.Models.Location", "Location")
                         .WithMany("AvailableDates")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Locations");
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("Thynk.CovidCenter.Data.Models.Booking", b =>
@@ -150,18 +159,31 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.HasOne("Thynk.CovidCenter.Data.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Thynk.CovidCenter.Data.Models.Location", "Locations")
+                    b.HasOne("Thynk.CovidCenter.Data.Models.AvailableDate", "AvailableDate")
+                        .WithMany("Bookings")
+                        .HasForeignKey("AvailableDateId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Thynk.CovidCenter.Data.Models.Location", "Location")
                         .WithMany("Bookings")
                         .HasForeignKey("LocationID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
 
-                    b.Navigation("Locations");
+                    b.Navigation("AvailableDate");
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Thynk.CovidCenter.Data.Models.AvailableDate", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("Thynk.CovidCenter.Data.Models.Location", b =>

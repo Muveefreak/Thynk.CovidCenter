@@ -8,8 +8,8 @@ namespace Thynk.CovidCenter.Core.Interface
 {
     public interface IAvailableDatesService
     {
-        Task<BaseResponse> CreateDates(List<CreateAvailableDatesRequest> request);
-        Task<AvailableDatesResponseModel> GetDates(Guid locationId);
+        Task<BaseResponse> CreateDates(CreateAvailableDatesRequest request);
+        Task<AvailableDatesResponseModel> GetDatesByLocation(Guid locationId);
         Task<AvailableDatesResponseModel> GetAllDates();
     }
 }

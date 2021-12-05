@@ -36,9 +36,9 @@ namespace Thynk.CovidCenter.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ReportResponseModel))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
-        public async Task<IActionResult> GetResults(Guid locationId)
+        public async Task<IActionResult> GetResults(GetResultsRequest request)
         {
-            ReportResponseModel response = await _reportService.GetResults(locationId);
+            ReportResponseModel response = await _reportService.GetResults(request);
             return Ok(response);
         }
     }
