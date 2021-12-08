@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Thynk.CovidCenter.Data.Models;
 
 namespace Thynk.CovidCenter.Repository
@@ -14,6 +15,14 @@ namespace Thynk.CovidCenter.Repository
         public DbSet<Location> Locations { get; set; }
         public DbSet<AvailableDate> AvailableDates { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetConnectionString("DefaultConnection"));
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
