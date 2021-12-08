@@ -1,0 +1,13 @@
+version: "3.5"
+    
+services:    
+  db-server:
+    image: mcr.microsoft.com/mssql/server
+    container_name: db-server
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Sapassword123
+      - MSSQL_TCP_PORT=1433
+    ports:
+      - 1433:1433
+    restart: on-failure

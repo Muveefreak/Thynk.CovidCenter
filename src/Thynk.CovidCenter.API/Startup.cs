@@ -85,11 +85,12 @@ namespace Thynk.CovidCenter.API
             }
             else
             {
-                services.AddStackExchangeRedisCache(option =>
-                {
-                    option.Configuration = Configuration.GetValue<string>("AppSettings:RedisConfig:Url");
-                    option.InstanceName = "Thynk_CovidCenter_";
-                });
+                services.AddDistributedMemoryCache();
+                //services.AddStackExchangeRedisCache(option =>
+                //{
+                //    option.Configuration = Configuration.GetValue<string>("AppSettings:RedisConfig:Url");
+                //    option.InstanceName = "Thynk_CovidCenter_";
+                //});
             }
         }
 
