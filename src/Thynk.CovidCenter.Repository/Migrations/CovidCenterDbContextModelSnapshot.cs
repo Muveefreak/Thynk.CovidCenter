@@ -109,6 +109,9 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.Property<Guid>("LocationID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("TestType")
+                        .HasColumnType("int");
+
                     b.HasKey("ID");
 
                     b.HasIndex("ApplicationUserId");
@@ -148,7 +151,7 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.HasOne("Thynk.CovidCenter.Data.Models.Location", "Location")
                         .WithMany("AvailableDates")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Location");
@@ -159,19 +162,19 @@ namespace Thynk.CovidCenter.Repository.Migrations
                     b.HasOne("Thynk.CovidCenter.Data.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Thynk.CovidCenter.Data.Models.AvailableDate", "AvailableDate")
                         .WithMany("Bookings")
                         .HasForeignKey("AvailableDateId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Thynk.CovidCenter.Data.Models.Location", "Location")
                         .WithMany("Bookings")
                         .HasForeignKey("LocationID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");

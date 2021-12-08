@@ -73,7 +73,7 @@ namespace Thynk.CovidCenter.Core.Concretes
 
             booking.BookingStatus = BookingStatus.Completed;
             booking.BookingResult = request.BookingResult;
-            await _bookingCommandRepository.UpdateAsync(booking);
+            _bookingCommandRepository.Update(booking);
             await _bookingCommandRepository.SaveAsync();
 
             return new BaseResponse
@@ -108,8 +108,9 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
-            for(var i = 0; i<= results.Count; i++)
+            for(var i = 0; i < results.Count; i++)
             {
+                reportDTO = new ReportDTO();
                 reportDTO.AvailableDate = results[i].DateAvailable;
                 reportDTO.BookingCapacity = results[i].AvailableSlots + results[i].Bookings.Count;
                 reportDTO.Bookings = results[i].Bookings.Count;

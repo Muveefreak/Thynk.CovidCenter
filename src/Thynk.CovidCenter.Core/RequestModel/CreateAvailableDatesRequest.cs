@@ -9,7 +9,7 @@ namespace Thynk.CovidCenter.Core.RequestModel
         [Required]
         public Guid ApplicationUserId { get; set; }
         public Guid LocationId { get; set; }
-        public DateTime DateAvailable { get; set; }
+        public string DateAvailable { get; set; }
         public long AvailableSlots { get; set; }
     }
 }

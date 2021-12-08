@@ -1,0 +1,47 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Enter Result</h4>
+				<h5 class="card-subtitle">enter result of test below</h5>
+				<form [formGroup]="formGroup" autocomplete="off" class="form p-t-20" (ngSubmit)="enterResultBooking()">
+					<div class="form-group">
+						<label>Booking ID</label>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon11"><i class="ti-bookingId"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="Booking ID" aria-label="Booking Id" aria-describedby="basic-addon11" formControlName="id" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputDescription1">User Id</label>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon22"><i class="ti-user"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="User Id" aria-label="User Id" aria-describedby="basic-addon22" formControlName="applicationUserId" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label>Result</label>
+						<div class="col-sm-4">
+							<div class="custom-control custom-radio">
+								<input type="radio" id="customRadio1" name="bookingResult" class="custom-control-input"
+								formControlName="bookingResult" value="positive">
+								<label class="custom-control-label" for="customRadio1">Positive</label>
+							</div>
+							<div class="custom-control custom-radio">
+								<input type="radio" id="customRadio2" name="bookingResult" class="custom-control-input"
+								formControlName="bookingResult" value="positive">
+								<label class="custom-control-label" for="customRadio2">Negative</label>
+							</div>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-success m-r-10">Submit</button>
+					<button onclick="{resetForm}" type="submit" class="btn btn-dark">Cancel</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

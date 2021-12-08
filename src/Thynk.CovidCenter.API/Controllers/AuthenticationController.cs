@@ -2,8 +2,10 @@
 using System.Net;
 using System.Threading.Tasks;
 using Thynk.CovidCenter.API.Helpers;
+using Thynk.CovidCenter.Core.DTOs;
 using Thynk.CovidCenter.Core.Interface;
 using Thynk.CovidCenter.Core.RequestModel;
+using Thynk.CovidCenter.Core.ResponseModel;
 using CoreBaseResponse = Thynk.CovidCenter.Core.ResponseModel.BaseResponse;
 
 namespace Thynk.CovidCenter.API.Controllers
@@ -25,7 +27,7 @@ namespace Thynk.CovidCenter.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
         public async Task<ActionResult<string>> Authenticate(AuthenticationRequest request)
         {
-            var response = await _authService.Authenticate(request);
+            GenericResponse<UserDTO> response = await _authService.Authenticate(request);
 
             return Ok(response);
         }

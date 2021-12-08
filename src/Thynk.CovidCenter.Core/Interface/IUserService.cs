@@ -8,7 +8,7 @@ namespace Thynk.CovidCenter.Core.Interface
 {
     public interface IUserService
     {
-        Task<BaseResponse> CreateUser(CreateUserRequest request);
+        Task<GenericResponse<UserDTO>> CreateUser(CreateUserRequest request);
         Task<UserResponseModel> GetUsers();
         Task<GenericResponse<UserDTO>> GetUser(Guid userId);
     }

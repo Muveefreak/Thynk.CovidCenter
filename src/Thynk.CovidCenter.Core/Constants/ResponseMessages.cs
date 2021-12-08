@@ -14,7 +14,8 @@
         public const string OnlyLabAdministrator = "Only Lab Administrators can perform this action";
         public const string OnlyAdminLabAdministrator = "Only Administrators or Lab Administrators can perform this action";
         public const string NoDuplicateDatesPerLocation = "No Duplicate Dates Per location Allowed";
-        public const string NoDuplicateBokingsLocation = "No Duplicate Bookings Per location Allowed";
+        public const string NoDuplicateBookingsLocation = "No Duplicate Bookings Per location Allowed";
         public const string NoAvailableSlots = "No Available Slots";
+        public const string NoDuplicateUsers = "User already exists";
     }
 }

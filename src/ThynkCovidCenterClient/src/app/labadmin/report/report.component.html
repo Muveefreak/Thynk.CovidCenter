@@ -1,0 +1,72 @@
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Toggle Accordion</h4>
+				<h6 class="card-subtitle">This is basic toggletype accordion</h6>
+
+				<form [formGroup]="formGroup" autocomplete="off" class="form p-t-20" (ngSubmit)="getReport()">
+					<div class="form-group">
+						<label>Location ID</label>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon11"><i class="ti-bookingId"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="Location ID" aria-label="Location Id" aria-describedby="basic-addon11" formControlName="locationId" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputDescription1">User Id</label>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon22"><i class="ti-user"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="User Id" aria-label="User Id" aria-describedby="basic-addon22" formControlName="applicationUserId" required>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-success m-r-10">Submit</button>
+					<button onClick="{resetForm}" class="btn btn-dark">Cancel</button>
+					</form>
+					<br />
+					<form>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col" sortable="availableDate">Available Date</th>
+								<th scope="col" sortable="capacity">Booking Capacity</th>
+								<th scope="col" sortable="bookings">Bookings</th>
+								<th scope="col" sortable="tests">Tests</th>
+								<th scope="col" sortable="positive">Positive Cases</th>
+								<th scope="col" sortable="negative">Negative Cases</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let item of reports; let i = index;">
+								<th scope="row">{{ i + 1 }}</th>
+								<td>
+									<ngb-highlight [result]="item.availableDate"></ngb-highlight>
+								</td>
+								<td>
+									<ngb-highlight [result]="item.bookingCapacity | number"></ngb-highlight>
+								</td>
+								<td>
+									<ngb-highlight [result]="item.bookings | number"></ngb-highlight>
+								</td>
+								<td>
+									<ngb-highlight [result]="item.tests | number"></ngb-highlight>
+								</td>
+								<td>
+									<ngb-highlight [result]="item.positiveCases | number"></ngb-highlight>
+								</td>
+								<td>
+									<ngb-highlight [result]="item.negativeCases | number"></ngb-highlight>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using Thynk.CovidCenter.API.Helpers;
+using Thynk.CovidCenter.Core.DTOs;
 using Thynk.CovidCenter.Core.Interface;
 using Thynk.CovidCenter.Core.RequestModel;
 using Thynk.CovidCenter.Core.ResponseModel;
@@ -23,12 +24,12 @@ namespace Thynk.CovidCenter.API.Controllers
 
         [HttpPost]
         [Route("create-user")]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CoreBaseResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GenericResponse<UserDTO>))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
         public async Task<IActionResult> CreateUser(CreateUserRequest request)
         {
-            CoreBaseResponse response = await _userService.CreateUser(request);
+            GenericResponse<UserDTO> response = await _userService.CreateUser(request);
             return Ok(response);
         }
 

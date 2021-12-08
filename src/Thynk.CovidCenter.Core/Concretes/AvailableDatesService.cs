@@ -67,7 +67,7 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
-            var alreadyExists = await _availableDatesQueryRepository.IsExistAsync(x => x.LocationId == request.LocationId && x.DateAvailable == request.DateAvailable);
+            var alreadyExists = await _availableDatesQueryRepository.IsExistAsync(x => x.LocationId == request.LocationId && x.DateAvailable.Date == Convert.ToDateTime(request.DateAvailable).Date);
             if(alreadyExists)
             {
                 return new BaseResponse
@@ -137,7 +137,7 @@ namespace Thynk.CovidCenter.Core.Concretes
                 };
             }
 
-            availableDates = (await _availableDatesQueryRepository.GetByAsync(x => x.ID == locationId && x.DateAvailable >= DateTime.UtcNow.Date && x.AvailableSlots > 0)).ToList();
+            availableDates = (await _availableDatesQueryRepository.GetByAsync(x => x.LocationId == locationId && x.DateAvailable >= DateTime.UtcNow.Date && x.AvailableSlots > 0)).ToList();
 
             if (availableDates.Any())
             {

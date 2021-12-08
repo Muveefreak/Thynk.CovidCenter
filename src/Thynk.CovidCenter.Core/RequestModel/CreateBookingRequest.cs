@@ -12,9 +12,9 @@ namespace Thynk.CovidCenter.Core.RequestModel
         public Guid ApplicationUserId { get; set; }
         [Required]
         public Guid AvailableDateId { get; set; }
-        [Required]
-        public DateTime AvailableDateSelected { get; set; }
+        //[Required]
+        //public DateTime AvailableDateSelected { get; set; }
         [EnumDataType(typeof(TestType))]
-        public TestType TetstType { get; set; }
+        public TestType TestType { get; set; }
     }
 }

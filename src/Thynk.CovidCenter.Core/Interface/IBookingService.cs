@@ -9,6 +9,6 @@ namespace Thynk.CovidCenter.Core.Interface
     {
         Task<BookingResponseModel> GetBookings(BookingStatus status);
         Task<BaseResponse> CreateBooking(CreateBookingRequest request);
-        Task<BaseResponse> CancelBooking(CreateBookingRequest request);
+        Task<BaseResponse> CancelBooking(CancelBookingRequest request);
     }
 }

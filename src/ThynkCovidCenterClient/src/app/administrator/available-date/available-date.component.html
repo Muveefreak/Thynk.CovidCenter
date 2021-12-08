@@ -1,0 +1,58 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-body">
+				<h4 class="card-title">Enter Available Date details</h4>
+				<h5 class="card-subtitle">create new available date below</h5>
+				<form [formGroup]="formGroup" autocomplete="off" class="form p-t-20" (ngSubmit)="createAvailableDate()">
+					<div class="form-group">
+						<label>Available Date *</label>
+						<div class="input-group">
+							<input type="date" class="form-control" placeholder="Datepicker" bsDatepicker formControlName="dateAvailable" />
+							<!-- <input type="date" #availableDatePicker="ngbDatepicker" class="form-control" placeholder="Select Date"
+								formControlName="dateAvailable" [(ngModel)]="dateAvail" ngbDatepicker /> -->
+
+							<!-- <button class="" (click)="availableDatePicker.toggle()" type="button">
+									<span class="fa fa-calendar pointer"></span> Open</button> -->
+						</div>
+					</div>
+					<div class="form-group">
+						<label>Location Id *</label>
+						<select class="custom-select col-12" id="inlineFormCustomSelect" formControlName="locationId"
+							(change)="selectLocationId($event)" required>
+							<option selected>Choose...</option>
+							<option [ngValue]="e.id" *ngFor="let e of locations">{{ e.name }}</option>
+						</select>
+						<!-- error block -->
+						<!-- <div class="invalid-feedback" *ngIf="isSubmitted && locationId.errors?.required">
+								<sup>*</sup>Please select location
+							  </div> -->
+					</div>
+					<div class="form-group">
+						<label for="exampleInputAvailableSlots1">Available Slots *</label>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon22"><i class="ti-description"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="Available Slots"
+								aria-label="Available Slots" aria-describedby="basic-addon22"
+								formControlName="availableSlots" required>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputUserId1">User Id *</label>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon22"><i class="ti-user"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="User Id" aria-label="User Id"
+								aria-describedby="basic-addon22" formControlName="applicationUserId" required>
+						</div>
+					</div>
+					<button [disabled]="!formGroup.valid" type="submit" class="btn btn-success m-r-10">Submit</button>
+					<button onclick="{resetForm}" type="submit" class="btn btn-dark">Cancel</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

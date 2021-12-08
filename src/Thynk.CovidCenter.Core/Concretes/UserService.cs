@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Serilog;
@@ -39,7 +40,7 @@ namespace Thynk.CovidCenter.Core.Concretes
             _cache = cache;
             _mapper = mapper;
         }
-        public async Task<BaseResponse> CreateUser(CreateUserRequest request)
+        public async Task<GenericResponse<UserDTO>> CreateUser(CreateUserRequest request)
         {
             var userEntity = _mapper.Map<ApplicationUser>(request);
 
@@ -56,13 +57,32 @@ namespace Thynk.CovidCenter.Core.Concretes
             await _cache.RemoveKeyAsync($"{CacheConstants.UsersCacheConstant}");
 
             await _userCommandRepository.AddAsync(userEntity);
-            await _userCommandRepository.SaveAsync();
+            try
+            {
+                await _userCommandRepository.SaveAsync();
+            }
+            catch(Exception ex)
+            {
+                SqlException innerException = ex.InnerException as SqlException;
+                if (innerException != null && (innerException.Number == 2627 || innerException.Number == 2601))
+                {
+                    return new GenericResponse<UserDTO>
+                    {
+                        Message = ResponseMessages.NoDuplicateUsers
+                    };
+                }
+                else
+                {
+                    throw;
+                }
+            }
             await CacheUsers();
 
-            return new BaseResponse
+            return new GenericResponse<UserDTO>
             {
                 Message = ResponseMessages.Success,
-                Status = true
+                Status = true,
+                Data = _mapper.Map<UserDTO>(userEntity)
             };
         }
 

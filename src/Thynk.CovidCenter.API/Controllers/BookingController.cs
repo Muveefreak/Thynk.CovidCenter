@@ -24,7 +24,7 @@ namespace Thynk.CovidCenter.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
-        public async Task<IActionResult> CreateBooking(BookingStatus request)
+        public async Task<IActionResult> GetBookings(BookingStatus request)
         {
             CoreBaseResponse response = await _bookingService.GetBookings(request);
             return Ok(response);
@@ -46,7 +46,7 @@ namespace Thynk.CovidCenter.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(CoreBaseResponse))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ValidationFailedResult))]
-        public async Task<IActionResult> CancelBooking(CreateBookingRequest request)
+        public async Task<IActionResult> CancelBooking(CancelBookingRequest request)
         {
             CoreBaseResponse response = await _bookingService.CancelBooking(request);
             return Ok(response);
