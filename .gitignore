@@ -22,7 +22,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 appSettings.Production.json
-aws-beanstalk-tools-defaults.json
 
 # Visual Studio 2015 cache/options directory
 .vs/

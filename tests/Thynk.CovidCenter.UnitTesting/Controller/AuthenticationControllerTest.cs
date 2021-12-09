@@ -23,25 +23,25 @@ namespace Thynk.CovidCenter.UnitTesting.Controller
             };
         }
 
-        [Fact]
-        public async Task AuthenticateUser_Should_Return_OkObjectResult_For_Valid_Input()
-        {
-            //Arrange
-            string userId = "111111";
+        //[Fact]
+        //public async Task AuthenticateUser_Should_Return_OkObjectResult_For_Valid_Input()
+        //{
+        //    //Arrange
+        //    string userId = "111111";
 
-            GenericResponse<UserDTO> response = new GenericResponse<UserDTO>()
-            {
-                Status = true
-            };
+        //    GenericResponse<UserDTO> response = new GenericResponse<UserDTO>()
+        //    {
+        //        Status = true
+        //    };
 
-            authenticationMock.Setup(o => o.Authenticate(It.IsAny<AuthenticationRequest>())).ReturnsAsync(() => (response));
-            //Act
-            var result = await sut.Authenticate(new AuthenticationRequest());
+        //    authenticationMock.Setup(o => o.Authenticate(It.IsAny<AuthenticationRequest>())).ReturnsAsync(() => (response));
+        //    //Act
+        //    var result = await sut.Authenticate(new AuthenticationRequest());
 
-            Assert.IsType<OkObjectResult>(result);
-            result.ShouldNotBeNull();
+        //    Assert.IsType<OkObjectResult>(result);
+        //    result.ShouldNotBeNull();
 
-        }
+        //}
 
     }
 }

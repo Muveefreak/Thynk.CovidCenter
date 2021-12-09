@@ -53,7 +53,7 @@ namespace Thynk.CovidCenter.Core.Concretes
         }
         public async Task<BookingResponseModel> GetBookings(BookingStatus status)
         {
-            List<Booking> bookings = (await _bookingQueryRepository.GetByAsync(x => x.AvailableDateSelected <= DateTime.UtcNow && x.BookingStatus == status)).ToList();
+            List<Booking> bookings = (await _bookingQueryRepository.GetByAsync(x => x.AvailableDateSelected >= DateTime.UtcNow && x.BookingStatus == status)).ToList();
 
             if (!bookings.Any())
             {

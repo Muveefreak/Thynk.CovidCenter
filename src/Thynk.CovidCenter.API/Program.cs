@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Threading.Tasks;
 using Thynk.CovidCenter.Repository;
 
@@ -34,7 +35,13 @@ namespace Thynk.CovidCenter.API
                 var context = scope.ServiceProvider.GetRequiredService<CovidCenterDbContext>();
 
                 //context.Database.EnsureDeleted();
-                //context.Database.Migrate();
+                //try
+                //{
+                //    if (context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+                //        context.Database.Migrate();
+                //}
+                //catch(Exception ex)
+                //{}
             }
             catch (System.Exception ex)
             {
